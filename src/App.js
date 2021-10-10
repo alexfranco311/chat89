@@ -21,17 +21,44 @@ firebase.initializeApp({
 const auth = firebase.auth();
 const firestore = firebase.firestore();
 
-const [user] = useAuthState();
-
 
 function App() {
+  const [user] = useAuthState();
+
   return (
     <div className="App">
-      <header className="App-header">
-        
+      <header>
+
       </header>
+      <section>
+        {user ? <ChatRoom /> : <SignIn />}
+      </section>
     </div>
-  );
+);
+}
+
+function SignIn() {
+  const signInWithGoogle = () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider);
+  }
+  return ( 
+    <button onClick={signInWithGoogle}>Sign in with Google</button>
+  )
+}
+
+function SignOut() {
+  return auth.currentUser && (
+    
+    <button onClick={() => auth.signOut()}>Sign Out</button>
+  )
+}
+
+Function ChatRoom() {
+  const messagesRef = firestore.collection('messages');
+  const query = messagesRef.orderBy('createdAt').limit(25);
+
+  const [messages] = useCollectionData(query, {idField: 'id'});
 }
 
 export default App;
